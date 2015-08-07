@@ -1,0 +1,11 @@
+{
+  "name": "8puzzle",
+  "version": "0.0.1",
+  "description": "A node-based version of an 8-puzzle solver project.",
+  "main": "solver.js",
+  "scripts": {
+    "test": "node index.js testPuzzle.txt"
+  },
+  "author": "Matt Bengston[mattbengston.com] <matt@aesinv.com>",
+  "license": "ISC"
+}
