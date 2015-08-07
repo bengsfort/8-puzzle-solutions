@@ -1,7 +1,8 @@
 var Board = require('./board.js');
 
 module.exports = function Solver (initial) {
-  var state = {}, queue = [];
+  var state = {}, queue = [],
+      goal = initial.getGoalBoard();
 
 // Set initial state
   state = {
@@ -12,6 +13,20 @@ module.exports = function Solver (initial) {
 // Push the current state into the queue
   queue.push(state);
 
+  while (!state.board.equals(goal)) {
+    var neighbors = state.board.neighbors(),
+        priority = [], hamming, manhattan;
+
+    for (var i = 0; i < neighbors.length; i++) {
+      hamming = neighbors[i].hamming(state.moves);
+      manhattan = neighbors[i].manhattan(state.moves);
+      priority[i] = hamming > manhattan ? hamming : manhattan;
+    }
+    
+    priority.filter()
+  }
+
+  if
   console.log(queue);
 
   return {
@@ -21,7 +36,7 @@ module.exports = function Solver (initial) {
       return true || false;
     },
 
-    moves: function() {
+    getMoves: function() {
       return state.moves;
     },
 

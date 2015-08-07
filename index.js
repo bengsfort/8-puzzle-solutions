@@ -31,8 +31,16 @@ if (solver.isSolvable()) {
   solutions.every(function(solution) {
     console.log('Hamming:', solution.board.hamming());
     console.log('Manhattan:', solution.board.manhattan());
+    console.log('Initial board:', '\n'+solution.board.viewBoard());
+    var neighbors = solution.board.neighbors();
+    neighbors.some(function(neighbor) {
+      console.log('neighbor', '\n'+neighbor.viewBoard());
+      console.log('hamming:', neighbor.hamming());
+      console.log('manhattan:', neighbor.manhattan());
+      console.log('-----------------------------------');
+    });
   });
-  return console.log('Minimum number of moves: '+ solver.moves());
+  // return console.log('Minimum number of moves: '+ solver.moves());
 }
 // No solution
 return console.log('No solution possible.');

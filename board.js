@@ -67,11 +67,6 @@ module.exports = function Board(tiles) {
       for (var i = 0; i < board.length * board[0].length; i++) {
         coords[i] = {};
         // Iterate through each row to get the coords of each
-        // coords[1].boardRow = 0,
-        // coords[1].boardCol = 2,
-        // coords[1].goalRow = 0,
-        // coords[1].goalCol = 0
-        // It would take 2 moves to to get to the correct spot, add to priority
         for (r = 0; r < board.length; r++) {
           if (board[r].indexOf(i) !== -1) {
             coords[i].boardRow = r;
@@ -94,11 +89,79 @@ module.exports = function Board(tiles) {
     },
 
     equals: function(boardY) {
-      return true || false;
+      var boardX = this.board;
+      if (boardX.length !== boardY.length) return false;
+      return boardY.every(function(row, rowIndex) {
+        return row.every(function(col, colIndex) {
+          return col === boardX[rowIndex][colIndex];
+        });
+      });
+    },
+
+    getPossibleMoves: function(emptyCoords) {
+      var possibleNeighbors = [];
+
+      for (var i = -1; i < 2; i++) {
+        if (i != 0) {
+          if (emptyCoords.row + i >= 0 &&
+              emptyCoords.row + i < this.board[0].length) {
+            possibleNeighbors.push({
+              val: this.board[emptyCoords.row + i][emptyCoords.col],
+              row: emptyCoords.row + i,
+              col: emptyCoords.col
+            });
+          }
+
+          if (emptyCoords.col + i >= 0 &&
+              emptyCoords.col + i < this.board.length) {
+            possibleNeighbors.push({
+              val: this.board[emptyCoords.row][emptyCoords.col + i],
+              row: emptyCoords.row,
+              col: emptyCoords.col + i
+            });
+          }
+        }
+      }
+
+      return possibleNeighbors;
     },
 
     neighbors: function() {
-      return [];
+      var initBoard = this.board,
+          emptyCoords = {},
+          neighbors = [],
+          neighborCoords;
+
+      // Get coords of zero
+      for (var r = 0; r < this.board.length; r++) {
+        if (this.board[r].indexOf(0) !== -1) {
+          emptyCoords.row = r;
+          emptyCoords.col = this.board[r].indexOf(0);
+        }
+      }
+
+      // Get all possible moves
+      neighborCoords = this.getPossibleMoves(emptyCoords);
+
+      var newBoard;
+      // Iterate through all possible moves,
+      for (var i = 0; i < neighborCoords.length; i++) {
+        newBoard = [];
+        for (var r = 0; r < initBoard.length; r++) {
+          newBoard[r] = [];
+          for (var c = 0; c < initBoard[0].length; c++) {
+            if (r == emptyCoords.row && c == emptyCoords.col) {
+              newBoard[r].push(neighborCoords[i].val);
+            } else if (r == neighborCoords[i].row && c == neighborCoords[i].col) {
+              newBoard[r].push(0);
+            } else {
+              newBoard[r].push(initBoard[r][c]);
+            }
+          }
+        }
+        neighbors.push(new Board(newBoard));
+      }
+      return neighbors;
     },
 
     toString: function() {
