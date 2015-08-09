@@ -4,7 +4,7 @@
   "description": "A node-based version of an 8-puzzle solver project.",
   "main": "solver.js",
   "scripts": {
-    "test": "node index.js testPuzzle.txt"
+    "test": "node index.js ./puzzles/testPuzzle.txt"
   },
   "author": "Matt Bengston[mattbengston.com] <matt@aesinv.com>",
   "license": "ISC"

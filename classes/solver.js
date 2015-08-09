@@ -23,12 +23,13 @@ module.exports = function Solver (initial) {
       priority[i] = hamming > manhattan ? hamming : manhattan;
     }
 
-    priority.filter(function(el, i, arr) {
+    // priority.filter(function(el, i, arr) {
       
-    });
+    // });
+console.log(queue);
   }
 
-  if
+  // if
   console.log(queue);
 
   return {

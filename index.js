@@ -1,5 +1,5 @@
-var Board = require('./board.js'),
-    Solver = require('./solver.js'),
+var Board = require('./classes/board.js'),
+    Solver = require('./classes/solver.js'),
     fs = require('fs');
 
 var file, splitFile, N, tiles, initial, solver, solution;
