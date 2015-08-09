@@ -22,8 +22,10 @@ module.exports = function Solver (initial) {
       manhattan = neighbors[i].manhattan(state.moves);
       priority[i] = hamming > manhattan ? hamming : manhattan;
     }
-    
-    priority.filter()
+
+    priority.filter(function(el, i, arr) {
+      
+    });
   }
 
   if

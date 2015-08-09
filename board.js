@@ -88,6 +88,12 @@ module.exports = function Board(tiles) {
       return priority;
     },
 
+    getPriority: function(moves) {
+      var hamming = this.hamming(moves),
+          manhattan = this.manhattan(moves);
+      return hamming > manhattan ? manhattan : hamming;
+    },
+
     equals: function(boardY) {
       var boardX = this.board;
       if (boardX.length !== boardY.length) return false;
