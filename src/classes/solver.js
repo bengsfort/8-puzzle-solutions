@@ -22,57 +22,85 @@ export class Solver {
         this.queue = queue;
 
         console.log(this.state.board.viewBoard());
-        for (let a = 0; a < 5; a++) {
+        for (let a = 0; a < 30; a++) {
             this.getNextMove();
         }
     }
 
     getNextMove () {
-//        if (this.state.board.equals(this.goal)) return;
-        let priority = [], bestOption, hamming, manhattan, newState,
+        if (this.state.board.equals(this.goal)) return;
+//        console.log(this);
+        let priority = [], bestOption, option = {}, hamming, manhattan, newState, prevCheck,
             neighbors = this.state.board.neighbors();
 
+        console.log('Current Board:');
+        console.log(this.state.board.viewBoard());
 
         for (let i = 0, len = neighbors.length; i < len; i++) {
-            hamming   = neighbors[i].hamming(this.state.moves);
-            manhattan = neighbors[i].manhattan(this.state.moves);
-            console.log(`Neighbor ${i}:\n Hamming: ${hamming}\n Manhattan: ${manhattan}`);
-            console.log(neighbors[i].viewBoard());
-            console.log('-----------');
-            priority[i] = hamming > manhattan ? manhattan : hamming;
+//            let prevCheck = this.checkPreviousBoards( neighbors[i] );
+            if ( this.checkPreviousBoards( neighbors[i] ) ) {
+                option.hamming = neighbors[i].hamming(this.state.moves);
+                option.manhattan = neighbors[i].manhattan(this.state.moves);
+                option.board = neighbors[i];
+//                console.log(`Neighbor ${i}:\n Hamming: ${option.hamming}\n Manhattan: ${option.manhattan}`);
+//                console.log(option.board.viewBoard());
+//                console.log('-----------');
+                priority.push(option);
+                option = {};
+            }
         }
 
-//        console.log(priority.length);
+//        console.log('priority length', priority.length);
+//        console.log(priority);
 
-        bestOption = priority.reduce((prev, curr, index) => {
-//            console.log(index);
-            if (prev < curr) {
-                if (this.state.previous !== null) {
-                    if (neighbors[index - 1].equals(this.state.previous.board.board) === false) {
-                        return index - 1;
-                    }
+        let curr, prev;
+        for (let p = 0, plen = priority.length; p < plen; p++) {
+            if (p > 0) {
 
-                    if (neighbors[index].equals(this.state.previous.board.board) === false) {
-                        return index;
-                    }
+                prev = priority[p - 1];
+                curr = priority[p];
+
+//                console.log(`Current / hamming: ${curr.hamming} manhattan: ${curr.manhattan}`);
+//                console.log(`Previous / hamming: ${prev.hamming} manhattan: ${prev.manhattan}`);
+                if (curr.hamming < prev.hamming && curr.manhattan < prev.manhattan) {
+//                    console.log('Current is better than prev');
+                    bestOption = curr.board;
+                } else {
+//                    console.log('Prev is better than current');
+                    bestOption = prev.board;
                 }
-                return index - 1;
+            } else {
+                console.log(priority);
+                bestOption = priority[0].board;
             }
-            return index;
-        });
+        }
 
-        newState = {
-            board: neighbors[bestOption],
-            moves: this.state.moves++,
+        this.state = {
+            board: bestOption,
+            moves: this.state.moves + 1,
             previous: this.state
         };
 
-        this.state = newState;
         this.queue.push(this.state);
-        console.log('Next Board: Board', bestOption);
-        console.log(newState.board.viewBoard());
+        console.log('Next Board:');
+        console.log(this.state.board.viewBoard());
         console.log(this.getMoves);
 //        this.getNextMove();
+    }
+
+    // Returns true if NOT found
+    checkPreviousBoards (board, queue = this.queue) {
+        if (queue.length === 1) return true;
+        return queue.every((state) => {
+            let boardCheck = board.equals(state.board.board), // should be false for "no matches"
+                neighborCheck = state.board.neighbors().every((neighbor) => {
+                    return ! board.equals(neighbor.board);
+                }); // true for "no matches" (because of the way every works)
+            console.log('boardCheck', boardCheck);
+            console.log('neighborCheck', neighborCheck);
+            if (boardCheck === false && neighborCheck === true) return true;
+            return false;
+        });
     }
 
     isSolvable () {
