@@ -7,5 +7,22 @@
     "test": "node index.js ./puzzles/testPuzzle.txt"
   },
   "author": "Matt Bengston[mattbengston.com] <matt@aesinv.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aesinv/javascript-8-puzzle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aesinv/javascript-8-puzzle/issues"
+  },
+  "homepage": "https://github.com/aesinv/javascript-8-puzzle#readme",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.1",
+    "shelljs": "^0.5.3"
+  }
 }

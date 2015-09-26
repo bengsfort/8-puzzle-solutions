@@ -1,4 +1,4 @@
-module.exports = function Board(tiles) {
+const Board = function (tiles) {
   return {
     board: tiles,
 
@@ -10,7 +10,7 @@ module.exports = function Board(tiles) {
         if (i == range) nums.push(0);
         else nums.push(i + 1);
       }
-      
+
       // Create goal
       for (var i = 0; i < this.board.length; i++) {
         goal[i] = []; // Init empty array within current row
@@ -35,7 +35,7 @@ module.exports = function Board(tiles) {
     },
 
     flattenBoard: function() {
-      return combined = this.board.reduce(function(prev, cur) {
+      return this.board.reduce(function(prev, cur) {
         return prev.concat(cur);
       });
     },
@@ -54,7 +54,7 @@ module.exports = function Board(tiles) {
     },
 
     // Manhattan Priority Function
-    // The sum of the distances (sum of the vertical and horizontal distance) from the blocks to their goal 
+    // The sum of the distances (sum of the vertical and horizontal distance) from the blocks to their goal
     // positions, plus the number of moves made so far to get to the state.
     manhattan: function(moves) {
       moves = moves || 0;
@@ -67,7 +67,7 @@ module.exports = function Board(tiles) {
       for (var i = 0; i < board.length * board[0].length; i++) {
         coords[i] = {};
         // Iterate through each row to get the coords of each
-        for (r = 0; r < board.length; r++) {
+        for (var r = 0; r < board.length; r++) {
           if (board[r].indexOf(i) !== -1) {
             coords[i].boardRow = r;
             coords[i].boardCol = board[r].indexOf(i);
@@ -97,11 +97,19 @@ module.exports = function Board(tiles) {
     equals: function(boardY) {
       var boardX = this.board;
       if (boardX.length !== boardY.length) return false;
-      return boardY.every(function(row, rowIndex) {
+//        console.log('--------------------------------------');
+//        console.log('boardX');
+//        console.log(boardX);
+//        console.log('boardY');
+//        console.log(boardY);
+      var result = boardY.every(function(row, rowIndex) {
         return row.every(function(col, colIndex) {
+
           return col === boardX[rowIndex][colIndex];
         });
       });
+//      console.log(result);
+      return result;
     },
 
     getPossibleMoves: function(emptyCoords) {
@@ -175,3 +183,5 @@ module.exports = function Board(tiles) {
     }
   };
 };
+
+module.exports = Board;
