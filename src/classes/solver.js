@@ -64,9 +64,6 @@ export class Solver {
 
     /**
      * function chooseBestMove (priority)
-     * @TODO: Verify this needs to be a for loop.
-     *    - I feel like Array#reduce would be more effective/efficient/readable,
-     *      but it didn't work last time it was implemented.
      */
     chooseBestMove (priority) {
         let curr, prev, bestOption;
