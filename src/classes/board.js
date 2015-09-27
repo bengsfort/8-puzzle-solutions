@@ -1,3 +1,10 @@
+/**
+ * 8puzzle Solver
+ * Board class
+ * @TODO: Refactor using more ES6 wherever it makes sense
+ * @TODO: Clean up code for more readability
+ * @TODO: Add detailed documentation for all functions
+ */
 const Board = function (tiles) {
   return {
     board: tiles,
@@ -6,8 +13,8 @@ const Board = function (tiles) {
       var goal = [], nums = [];
       // Create array with correct num order
       var range = this.board.length * this.board[0].length;
-      for (var i = 0; i <= range; i++) {
-        if (i == range) nums.push(0);
+      for (var i = 0; i < range; i++) {
+        if (i == range - 1) nums.push(0);
         else nums.push(i + 1);
       }
 
@@ -97,18 +104,19 @@ const Board = function (tiles) {
     equals: function(boardY) {
       var boardX = this.board;
       if (boardX.length !== boardY.length) return false;
+
 //        console.log('--------------------------------------');
 //        console.log('boardX');
 //        console.log(boardX);
 //        console.log('boardY');
 //        console.log(boardY);
+
       var result = boardY.every(function(row, rowIndex) {
         return row.every(function(col, colIndex) {
-
           return col === boardX[rowIndex][colIndex];
         });
       });
-//      console.log(result);
+
       return result;
     },
 

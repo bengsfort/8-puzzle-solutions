@@ -1,7 +1,11 @@
-//var Board = require('./classes/board.js'),
-//    Solver = require('./classes/solver.js'),
-//    fs = require('fs');
-
+/**
+ * 8puzzle Solver
+ * Main app file
+ * @TODO: Add check to determine if a puzzle is possible or not
+ * @TODO: Refactor using more ES6 wherever it makes sense
+ * @TODO: Clean up code for more readability
+ * @TODO: Add detailed documentation for the entire codebase
+ */
 import Board from "./classes/board";
 import Solver from "./classes/solver";
 import fs from "fs";
@@ -32,34 +36,18 @@ for (var i = 0; i < N; i++) {
 initial = new Board(tiles);
 solver = new Solver(initial);
 
-//let n = initial.neighbors();
-//console.log(n.length);
-//n.map((neighbor) => {
-//    console.log('Hamming:', neighbor.hamming());
-//    console.log('Manhattan:', neighbor.manhattan());
-//    console.log('Initial:', '\n'+neighbor.viewBoard());
-//});
-
 
 // If the puzzle is solvable, continue solving
-//if (!solver.isSolvable()) {
-//    // No solution
-//    console.log('No solution possible.');
-//    process.exit(1);
-//}
-//
-//solutions = solver.solution();
-//solutions.every((solution) => {
-//console.log('Hamming:', solution.board.hamming());
-//console.log('Manhattan:', solution.board.manhattan());
-//console.log('Initial board:', '\n'+solution.board.viewBoard());
-////var neighbors = solution.board.neighbors();
-////    neighbors.some((neighbor) => {
-////      console.log('neighbor', '\n'+neighbor.viewBoard());
-////      console.log('hamming:', neighbor.hamming());
-////      console.log('manhattan:', neighbor.manhattan());
-////      console.log('-----------------------------------');
-////    });
-//});
-//console.log('Minimum number of moves: '+ solver.getMoves);
-//process.exit(0);
+if (!solver.isSolvable()) {
+    // No solution
+    console.log('No solution possible.');
+    process.exit(1);
+}
+
+solver.onSolutionReady((states, moves) => {
+    states.filter((state) => {
+        console.log(state.board.viewBoard());
+    });
+    console.log(`Minimum number of moves: ${moves}`);
+    process.exit(0);
+});

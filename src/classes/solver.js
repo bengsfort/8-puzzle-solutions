@@ -1,6 +1,17 @@
+/**
+ * 8puzzle Solver
+ * Solver class
+ * @TODO: Add check to determine if a puzzle is possible or not
+ * @TODO: Clean up code for more readability
+ * @TODO: Add detailed documentation for all methods
+ */
 import Board from "./board";
 
+/** function Solver () */
 export class Solver {
+    /**
+     * function constructor (initial)
+     */
     constructor (initial) {
         let state = {}, queue = [],
             goal = initial.getGoalBoard();
@@ -20,60 +31,27 @@ export class Solver {
 
         this.state = state;
         this.queue = queue;
+//        this.priority = []; Implement after fixing final board erroring out
 
-        console.log(this.state.board.viewBoard());
-        for (let a = 0; a < 30; a++) {
+        while ( ! this.state.board.equals(this.goal) ) {
             this.getNextMove();
         }
+
+        this.solutionReady();
     }
 
+    /**
+     * function getNextMove ()
+     */
     getNextMove () {
-        if (this.state.board.equals(this.goal)) return;
-//        console.log(this);
-        let priority = [], bestOption, option = {}, hamming, manhattan, newState, prevCheck,
+        let priority = [], bestOption,
             neighbors = this.state.board.neighbors();
 
-        console.log('Current Board:');
-        console.log(this.state.board.viewBoard());
+        // Create a new priority queue with all neighbors that haven't already been used
+        priority = this.createPriorityQueue( neighbors );
 
-        for (let i = 0, len = neighbors.length; i < len; i++) {
-//            let prevCheck = this.checkPreviousBoards( neighbors[i] );
-            if ( this.checkPreviousBoards( neighbors[i] ) ) {
-                option.hamming = neighbors[i].hamming(this.state.moves);
-                option.manhattan = neighbors[i].manhattan(this.state.moves);
-                option.board = neighbors[i];
-//                console.log(`Neighbor ${i}:\n Hamming: ${option.hamming}\n Manhattan: ${option.manhattan}`);
-//                console.log(option.board.viewBoard());
-//                console.log('-----------');
-                priority.push(option);
-                option = {};
-            }
-        }
-
-//        console.log('priority length', priority.length);
-//        console.log(priority);
-
-        let curr, prev;
-        for (let p = 0, plen = priority.length; p < plen; p++) {
-            if (p > 0) {
-
-                prev = priority[p - 1];
-                curr = priority[p];
-
-//                console.log(`Current / hamming: ${curr.hamming} manhattan: ${curr.manhattan}`);
-//                console.log(`Previous / hamming: ${prev.hamming} manhattan: ${prev.manhattan}`);
-                if (curr.hamming < prev.hamming && curr.manhattan < prev.manhattan) {
-//                    console.log('Current is better than prev');
-                    bestOption = curr.board;
-                } else {
-//                    console.log('Prev is better than current');
-                    bestOption = prev.board;
-                }
-            } else {
-                console.log(priority);
-                bestOption = priority[0].board;
-            }
-        }
+        // Decide which move is the best one to try next
+        bestOption = this.chooseBestMove(priority);
 
         this.state = {
             board: bestOption,
@@ -82,86 +60,146 @@ export class Solver {
         };
 
         this.queue.push(this.state);
-        console.log('Next Board:');
-        console.log(this.state.board.viewBoard());
-        console.log(this.getMoves);
-//        this.getNextMove();
     }
 
-    // Returns true if NOT found
-    checkPreviousBoards (board, queue = this.queue) {
-        if (queue.length === 1) return true;
-        return queue.every((state) => {
-            let boardCheck = board.equals(state.board.board), // should be false for "no matches"
-                neighborCheck = state.board.neighbors().every((neighbor) => {
-                    return ! board.equals(neighbor.board);
-                }); // true for "no matches" (because of the way every works)
-            console.log('boardCheck', boardCheck);
-            console.log('neighborCheck', neighborCheck);
-            if (boardCheck === false && neighborCheck === true) return true;
+    /**
+     * function chooseBestMove (priority)
+     * @TODO: Verify this needs to be a for loop.
+     *    - I feel like Array#reduce would be more effective/efficient/readable,
+     *      but it didn't work last time it was implemented.
+     */
+    chooseBestMove (priority) {
+        let curr, prev, bestOption;
+
+        priority.map((item, index, arr) => {
+            if (index == 0) {
+                bestOption = item;
+                return;
+            }
+
+            if ((item.hamming === 0 && item.manhattan === 0) ||
+                (item.hamming < bestOption.hamming && item.manhattan < bestOption.manhattan)) {
+                bestOption = item;
+                return;
+            }
+        });
+
+        return bestOption.board;
+    }
+
+    /**
+     * function createPriorityQueue (boards)
+     */
+    createPriorityQueue ( boards ) {
+        let priority = [];
+        boards.map((board, i, arr) => {
+            let test = this.checkPreviousBoards( board, this.queue, () => {
+                return {
+                    hamming   : board.hamming(this.state.moves),
+                    manhattan : board.manhattan(this.state.moves),
+                    board     : board
+                };
+            });
+            if (test !== false) priority.push(test);
+        });
+        return priority;
+    }
+
+    /**
+     * function checkPreviousBoards (board, queue, cb)
+     * Returns true if NOT found
+     */
+    checkPreviousBoards (board, queue, cb) {
+        if (queue.length === 1) return cb();
+        let results, fireCb = false;
+
+        results = queue.every((state) => {
+            let boardCheck = board.equals(state.board.board); // should be false for "no matches"
+
+            if (boardCheck === false) {
+                fireCb = true;
+                return true;
+            }
+
             return false;
+        });
+
+        if (results === true) {
+            return cb();
+        }
+
+        return results;
+    }
+
+    /**
+     * function onSolutionReady(callback)
+     */
+    onSolutionReady (callback) {
+        this.readyCallbacks = this.readyCallbacks || [];
+        this.readyCallbacks.push(callback);
+
+        if (this.hasOwnProperty('completedSolutions')) {
+            this.completedSolutions.filter((finished) => {
+                callback(finished.solution, finished.moves, finished.context);
+            });
+        }
+    }
+
+    /**
+     * function solutionReady()
+     */
+    solutionReady () {
+        if (this.hasOwnProperty('readyCallbacks')) {
+            for (let i = 0, len = this.readyCallbacks.length; i < len; i++) {
+                this.readyCallbacks[i](this.getSolution, this.getMoves, this);
+            }
+        }
+
+        // Push completed solutions to a global array in case
+        // the solution finishes before an event handler is declared.
+        this.completedSolutions = [];
+        this.completedSolutions.push({
+            solution : this.getSolution,
+            moves    : this.getMoves,
+            context  : this
         });
     }
 
+    /**
+     * function isSolvable ()
+     * @TODO
+     */
     isSolvable () {
         return true || false;
     }
 
+    /**
+     * function getMoves()
+     */
     get getMoves () {
         return this.state.moves;
     }
 
-    solution () {
+    /**
+     * function priorityQueue ()
+     */
+    get priorityQueue () {
+        return this.priority;
+    }
+
+    /**
+     * function getState()
+     */
+    get getState () {
+        return this.state;
+    }
+
+    /**
+     * function getSolution ()
+     */
+    get getSolution () {
         return this.queue;
     }
 }
 
 module.exports = Solver;
-//module.exports = function Solver (initial) {
-//  var state = {}, queue = [],
-//      goal = initial.getGoalBoard();
-//
-//// Set initial state
-//  state = {
-//    board: initial,
-//    moves: 0,
-//    previous: null
-//  };
-//// Push the current state into the queue
-//  queue.push(state);
-//
-//  while (!state.board.equals(goal)) {
-//    var neighbors = state.board.neighbors(),
-//        priority = [], hamming, manhattan;
-//
-//    for (var i = 0; i < neighbors.length; i++) {
-//      hamming = neighbors[i].hamming(state.moves);
-//      manhattan = neighbors[i].manhattan(state.moves);
-//      priority[i] = hamming > manhattan ? hamming : manhattan;
-//    }
-//
-//    // priority.filter(function(el, i, arr) {
-//
-//    // });
-////    console.log(queue);
-//  }
-//
-//  // if
-////  console.log(queue);
-//
-//  return {
-//    initial: initial,
-//
-//    isSolvable: function() {
-//      return true || false;
-//    },
-//
-//    getMoves: function() {
-//      return state.moves;
-//    },
-//
-//    solution: function() {
-//      return queue;
-//    }
-//  };
-//};
