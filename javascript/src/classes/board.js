@@ -13,10 +13,10 @@ export const getGoalBoard = (board: BoardTiles): BoardTiles => {
   const range: number = board.length * board.length;
   const goal: BoardTiles = [];
 
-  for (let y = 0, n = 1; y < board.length; y++, n++) {
+  for (let y = 0, n = 1; y < board.length; y++) {
     goal[y] = [];
-    for (let x = 0; y < board.length; x++, n++) {
-      goal[y][x] = (n < range - 1 ? n : 0);
+    for (let x = 0; x < board.length; x++, n++) {
+      goal[y][x] = (n < range ? n : 0);
     }
   }
 
