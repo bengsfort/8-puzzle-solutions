@@ -1,0 +1,9 @@
+{
+	"presets": [
+		"flow",
+		"env"
+	],
+	"plugins": [
+		"transform-class-properties"
+	]
+}
