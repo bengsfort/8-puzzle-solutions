@@ -7,12 +7,11 @@
  */
 import Board from "./board";
 
-/** function Solver () */
 export class Solver {
     /**
      * function constructor (initial)
      */
-    constructor (initial) {
+    constructor (initial: Board) {
         let state = {}, queue = [],
             goal = initial.getGoalBoard();
 
