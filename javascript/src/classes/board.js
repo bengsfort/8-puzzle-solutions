@@ -35,11 +35,17 @@ export const flattenBoard = (board: BoardTiles): number[] => {
 /**
  * Finds the position of zero in a board and returns a coordinate for it
  * @param {BoardTiles} board Finds the position of zero within a board.
+ * @returns {TileCoord} The tile coordinate of the empty tile.
  */
 export const getZeroPosition = (board: BoardTiles): TileCoord => {
-  const coord: TileCoord = { x: 0, y: 0 };
-
-  return coord;
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board.length; x++) {
+      if (board[y][x] === 0) {
+        return { x, y };
+      }
+    }
+  }
+  throw new Error('Board does not contain an empty tile.');
 };
 
 /**
@@ -80,8 +86,23 @@ export default class Board {
     return flattenBoard(this.board).every((val, i) => val === otherBoard[i]);
   }
 
-
-
+  /**
+   * Hamming priority function.
+   * The number of blocks in the wrong position, plus the number of moves made so far to get to the state.
+   * @param {}
+   */
+   hamming(moves: number = 0): number {
+    // 1 should be at the 0 index, 2 at 1, etc.
+    const flatBoard = flattenBoard(this.board);
+    return flatBoard.filter(n => {
+      if (n === 0) {
+        return false;
+      }
+      if (n !== flatBoard[n - 1]) {
+        return true;
+      }
+    }).length + moves;
+   }
 }
 
 // const Board = function (tiles) {
@@ -144,7 +165,7 @@ export default class Board {
 
 //     equals: function(boardY) {
 //       var boardX = this.board;
-      
+
 //       if (boardX.length !== boardY.length) {
 //         return false;
 //       }

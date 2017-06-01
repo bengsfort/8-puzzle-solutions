@@ -38,6 +38,11 @@ describe('board.js tests', function() {
       expect(result2).to.be.an('object');
       expect(result2).to.deep.equal({ x: 0, y: 0});
     });
+
+    it('#getZeroPosition should throw an error when there is no blank tile', function() {
+      const fixture = () => getZeroPosition([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+      expect(fixture).to.throw();
+    });
   });
 
   describe('#toString', function() {
@@ -58,6 +63,25 @@ describe('board.js tests', function() {
     it('should return false when given a different board', function() {
       const board = new Board(board1);
       expect(board.equals(board2)).to.be.false;
+    });
+  });
+
+  describe('#hamming', function() {
+    it('should return 0 when at the goal with no moves', function() {
+      const board = new Board(board1);
+      expect(board.hamming(0)).to.equal(0);
+    });
+
+    it('should return the number of tiles out of place with no moves', function() {
+      const board = new Board(board2);
+      expect(board.hamming(0)).to.equal(2);
+    });
+
+    it('should return the number of tiles out of place plus the number of moves', function() {
+      const wipBoard = new Board(board2);
+      expect(wipBoard.hamming(2)).to.equal(4);
+      const goalBoard = new Board(board1);
+      expect(goalBoard.hamming(5)).to.equal(5);
     });
   });
 });
