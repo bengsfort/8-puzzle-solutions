@@ -105,4 +105,15 @@ describe('board.js tests', function() {
       expect(board.manhattan(4)).to.equal(8);
     });
   });
+
+  describe('#getPriority', function() {
+    it('should return the Hamming priority when its lower', function() {
+      const board = new Board(board2);
+      expect(board.getPriority(2)).to.equal(4); // Hamming: 4, Manhattan: 6
+    });
+
+    it('should return the Manhattan priority when its lower', function() {
+      // @todo: wtf is manhattan ever lower? investigate
+    });
+  });
 });

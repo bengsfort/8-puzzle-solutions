@@ -140,45 +140,21 @@ export default class Board {
 
     return priority;
   }
+
+  /**
+   * Returns the lowest priority function result as this boards priority.
+   * @param {number} moves The number of moves so far.
+   * @returns {number} The current priority.
+   */
+  getPriority(moves: number): number {
+    const hamming = this.hamming(moves);
+    const manhattan = this.manhattan(moves);
+    return hamming > manhattan ? manhattan : hamming;
+  }
 }
 
 // const Board = function (tiles) {
 //   return {
-//     // Manhattan Priority Function
-//     // The sum of the distances (sum of the vertical and horizontal distance) from the blocks to their goal
-//     // positions, plus the number of moves made so far to get to the state.
-//     manhattan: function(moves) {
-//       moves = moves || 0;
-//       var goal = this.getGoalBoard(),
-//           board = this.board,
-//           coords = [],
-//           priority = 0,
-//           goalRow, goalCol, boardRow, boardCol;
-
-//       for (var i = 0; i < board.length * board[0].length; i++) {
-//         coords[i] = {};
-//         // Iterate through each row to get the coords of each
-//         for (var r = 0; r < board.length; r++) {
-//           if (board[r].indexOf(i) !== -1) {
-//             coords[i].boardRow = r;
-//             coords[i].boardCol = board[r].indexOf(i);
-//           }
-//           if (goal[r].indexOf(i) !== -1) {
-//             coords[i].goalRow = r;
-//             coords[i].goalCol = goal[r].indexOf(i);
-//           }
-//         }
-//       }
-
-//       coords.reduce(function(prev, curr, i) {
-//         var x = Math.abs(curr.boardRow - curr.goalRow);
-//         var y = Math.abs(curr.boardCol - curr.goalCol);
-//         priority += x + y;
-//       });
-
-//       return priority;
-//     },
-
 //     getPriority: function(moves) {
 //       var hamming = this.hamming(moves),
 //           manhattan = this.manhattan(moves);
