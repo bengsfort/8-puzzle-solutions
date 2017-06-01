@@ -2,7 +2,7 @@
 
 'use strict';
 
-import type { BoardTiles } from '../types';
+import type { BoardTiles, TileCoord } from '../types';
 
 /**
  * Gets the goal board based on a provided board.
@@ -33,6 +33,16 @@ export const flattenBoard = (board: BoardTiles): number[] => {
 };
 
 /**
+ * Finds the position of zero in a board and returns a coordinate for it
+ * @param {BoardTiles} board Finds the position of zero within a board.
+ */
+export const getZeroPosition = (board: BoardTiles): TileCoord => {
+  const coord: TileCoord = { x: 0, y: 0 };
+
+  return coord;
+};
+
+/**
  * Board class.
  */
 export default class Board {
@@ -42,8 +52,11 @@ export default class Board {
 
   goal: BoardTiles;
 
+  zeroPosition: TileCoord;
+
   constructor(tiles: BoardTiles) {
     this.board = tiles;
+    this.zeroPosition = getZeroPosition(this.board);
     this.goal = getGoalBoard(this.board);
   }
 
@@ -216,9 +229,5 @@ export default class Board {
 //       }
 //       return neighbors;
 //     },
-
-//     toString: function() {
-//       return this.flattenBoard().join('');
-//     }
 //   };
 // };

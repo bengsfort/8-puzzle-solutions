@@ -2,4 +2,10 @@
 
 'use strict';
 
+/** A two-dimensional array of board tiles. */
 export type BoardTiles = number[][];
+/** Coordinate reference for the empty tile in a board. */
+export type TileCoord = {
+  x: number;
+  y: number;
+};
