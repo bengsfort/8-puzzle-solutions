@@ -9,3 +9,8 @@ export type TileCoord = {
   x: number;
   y: number;
 };
+/** Coordinate comparator object. */
+export type CoordComparator = {
+  board: TileCoord;
+  goal: TileCoord;
+};

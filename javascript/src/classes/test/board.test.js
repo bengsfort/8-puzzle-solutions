@@ -10,6 +10,7 @@ import Board, {
 const board1 = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
 const board2 = [[3, 2, 1], [4, 5, 6], [7, 8, 0]];
 const board3 = [[0, 2, 3], [6, 5, 4], [7, 8, 1]];
+const board4 = [[4, 2, 3], [1, 5, 6], [7, 8, 0]];
 const formattedBoard1 = `
 1 2 3
 4 5 6
@@ -78,10 +79,30 @@ describe('board.js tests', function() {
     });
 
     it('should return the number of tiles out of place plus the number of moves', function() {
-      const wipBoard = new Board(board2);
-      expect(wipBoard.hamming(2)).to.equal(4);
-      const goalBoard = new Board(board1);
-      expect(goalBoard.hamming(5)).to.equal(5);
+      let board = new Board(board2);
+      expect(board.hamming(2)).to.equal(4);
+      board = new Board(board1);
+      expect(board.hamming(5)).to.equal(5);
+    });
+  });
+
+  describe('#manhattan', function() {
+    it('should return 0 when at the goal with no moves', function() {
+      const board = new Board(board1);
+      expect(board.manhattan(0)).to.equal(0);
+    });
+
+    it('should return the sum of the distances of out of place tiles to their position with no moves', function() {
+      let board = new Board(board2);
+      expect(board.manhattan(0)).to.equal(4);
+      board = new Board(board4);
+      expect(board.manhattan(0)).to.equal(2);
+    });
+
+    it('should return the sum of the distances of out of place tiles to their position with moves', function() {
+      const board = new Board(board2);
+      expect(board.manhattan(2)).to.equal(6);
+      expect(board.manhattan(4)).to.equal(8);
     });
   });
 });

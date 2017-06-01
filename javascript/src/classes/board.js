@@ -2,7 +2,11 @@
 
 'use strict';
 
-import type { BoardTiles, TileCoord } from '../types';
+import type {
+  BoardTiles,
+  TileCoord,
+  CoordComparator,
+} from '../types';
 
 /**
  * Gets the goal board based on a provided board.
@@ -89,9 +93,10 @@ export default class Board {
   /**
    * Hamming priority function.
    * The number of blocks in the wrong position, plus the number of moves made so far to get to the state.
-   * @param {}
+   * @param {number} moves The number of moves that have been taken.
+   * @returns {number} The Hamming priority value.
    */
-   hamming(moves: number = 0): number {
+  hamming(moves: number = 0): number {
     // 1 should be at the 0 index, 2 at 1, etc.
     return flattenBoard(this.board).filter((n, idx) => {
       if (n === 0) {
@@ -101,26 +106,44 @@ export default class Board {
         return true;
       }
     }).length + moves;
-   }
+  }
+
+  /**
+   * Manhattan priority function.
+   * The sum of the distances (vertical + horizontal) of blocks to their goal positions, plus the number of moves made so far.
+   * @param {number} moves The moves taken so far.
+   * @returns {number} The Manhattan priority value.
+   */
+  manhattan(moves: number = 0): number {
+    const numTiles: number = this.board.length * this.board.length;
+    let priority: number = moves;
+
+    for (var i = 0; i < numTiles; i++) {
+      const coords: CoordComparator = {};
+      // Iterate through rows and see if the value exists
+      for (var y = 0; y < this.board.length; y++) {
+        const boardX = this.board[y].indexOf(i);
+        const goalX = this.goal[y].indexOf(i);
+        if (boardX !== -1) {
+          coords.board = { x: boardX, y };
+        }
+        if (goalX !== -1) {
+          coords.goal = { x: goalX, y };
+        }
+        if (coords.hasOwnProperty('board') && coords.hasOwnProperty('goal')) {
+          break;
+        }
+      }
+
+      priority += Math.abs(coords.board.x - coords.goal.x) + Math.abs(coords.board.y - coords.goal.y);
+    }
+
+    return priority;
+  }
 }
 
 // const Board = function (tiles) {
 //   return {
-//     board: tiles,
-
-//     // Hamming Priority Function
-//     // The number of blocks in the wrong position, plus the number of moves made so far to get to the state.
-//     // Intuitively, a state with a small number of blocks in the wrong position is close to the goal state,
-//     // and we prefer a state that have been reached using a small number of moves.
-//     hamming: function(moves) {
-//       moves = moves || 0;
-//       // 1 should be at the 0 index, 2 at 1, etc.
-//       return this.flattenBoard().filter(function(N) {
-//         if (N === 0) return false;
-//         else if (N !== this.flattenBoard()[N - 1]) return true;
-//       }, this).length;
-//     },
-
 //     // Manhattan Priority Function
 //     // The sum of the distances (sum of the vertical and horizontal distance) from the blocks to their goal
 //     // positions, plus the number of moves made so far to get to the state.
