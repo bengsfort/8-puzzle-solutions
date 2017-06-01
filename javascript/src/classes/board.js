@@ -93,12 +93,11 @@ export default class Board {
    */
    hamming(moves: number = 0): number {
     // 1 should be at the 0 index, 2 at 1, etc.
-    const flatBoard = flattenBoard(this.board);
-    return flatBoard.filter(n => {
+    return flattenBoard(this.board).filter((n, idx) => {
       if (n === 0) {
         return false;
       }
-      if (n !== flatBoard[n - 1]) {
+      if (n !== idx + 1) {
         return true;
       }
     }).length + moves;
