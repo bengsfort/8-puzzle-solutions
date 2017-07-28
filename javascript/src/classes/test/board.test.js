@@ -5,12 +5,14 @@ import Board, {
   getGoalBoard,
   flattenBoard,
   getZeroPosition,
+  newBoardFromPosition,
 } from '../board';
 
 const board1 = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
 const board2 = [[3, 2, 1], [4, 5, 6], [7, 8, 0]];
 const board3 = [[0, 2, 3], [6, 5, 4], [7, 8, 1]];
 const board4 = [[4, 2, 3], [1, 5, 6], [7, 8, 0]];
+const board5 = [[1, 2, 3], [4, 0, 5], [6, 7, 8]];
 const formattedBoard1 = `
 1 2 3
 4 5 6
@@ -43,6 +45,27 @@ describe('board.js tests', function() {
     it('#getZeroPosition should throw an error when there is no blank tile', function() {
       const fixture = () => getZeroPosition([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
       expect(fixture).to.throw();
+    });
+
+    it('#newBoardFromPosition should return a valid new board when passed a new position', function() {
+      const oldPosition = { x: 1, y: 1 };
+      let newPosition = { x: 2, y: 1 };
+      const result1 = newBoardFromPosition(board5, newPosition, oldPosition);
+      expect(result1.zeroPosition).to.deep.equal(newPosition);
+      expect(result1.board).to.deep.equal([
+        [1, 2, 3],
+        [4, 5, 0],
+        [6, 7, 8],
+      ]);
+
+      newPosition = { x: 2, y: 2 };
+      const result2 = newBoardFromPosition(result1.board, newPosition, result1.zeroPosition);
+      expect(result2.zeroPosition).to.deep.equal(newPosition);
+      expect(result2.board).to.deep.equal([
+        [1, 2, 3],
+        [4, 5, 8],
+        [6, 7, 0],
+      ]);
     });
   });
 
@@ -114,6 +137,48 @@ describe('board.js tests', function() {
 
     it('should return the Manhattan priority when its lower', function() {
       // @todo: wtf is manhattan ever lower? investigate
+      expect(true).to.be.true;
+    });
+  });
+
+  describe('#getNeighbors', function() {
+    it('should return 4 neighbors when run on a board with 0 in the middle', function() {
+      const instance = new Board([
+        [1, 2, 3],
+        [4, 0, 5],
+        [6, 7, 8],
+      ]);
+      const neighbors = instance.getNeighbors();
+      expect(neighbors).to.be.an('array');
+      expect(neighbors).to.have.lengthOf(4);
+    });
+
+    it('should return 2 neighbors when run on a board with 0 in a corner', function() {
+      const instance = new Board([
+        [1, 2, 3],
+        [4, 8, 5],
+        [6, 7, 0],
+      ]);
+      const neighbors = instance.getNeighbors();
+      expect(neighbors).to.be.an('array');
+      expect(neighbors).to.have.lengthOf(2);
+    });
+
+    it('should return boards correctly representing the neighbors', function() {
+      const instance = new Board([
+        [1, 2, 3],
+        [4, 8, 5],
+        [6, 7, 0],
+      ]);
+      const neighbors = instance.getNeighbors();
+      expect(neighbors[1].zeroPosition).to.deep.equal({
+        x: 2,
+        y: 1,
+      });
+      expect(neighbors[0].zeroPosition).to.deep.equal({
+        x: 1,
+        y: 2,
+      });
     });
   });
 });

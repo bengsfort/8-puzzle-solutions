@@ -1,4 +1,5 @@
 /**
+ * @flow
  * 8puzzle Solver
  * Solver class
  * @TODO: Add check to determine if a puzzle is possible or not

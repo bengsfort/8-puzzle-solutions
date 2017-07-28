@@ -1,4 +1,6 @@
-// @flow
+/**
+ * @flow
+ */
 
 'use strict';
 
@@ -53,6 +55,21 @@ export const getZeroPosition = (board: BoardTiles): TileCoord => {
 };
 
 /**
+ * Creates a new Board instance from an new 0 coordinate.
+ * @param {BoardTiles} reference board to build the new board from
+ * @param {TileCoord} position the new zero position (where to place the zero in the new board)
+ * @param {TileCoord} oldPosition the old zero position (for efficiency reasons)
+ * @returns a new board with zero at the provided position
+ */
+export const newBoardFromPosition = (reference: BoardTiles, position: TileCoord, oldPosition: TileCoord): Board => {
+  const tiles = reference;
+  // Replace the old 0 with the number being moved before assigning 0 to its new position
+  tiles[oldPosition.y][oldPosition.x] = tiles[position.y][position.x];
+  tiles[position.y][position.x] = 0;
+  return new Board(tiles, position);
+};
+
+/**
  * Board class.
  */
 export default class Board {
@@ -60,13 +77,23 @@ export default class Board {
   /** Reference to the provided board */
   board: BoardTiles;
 
+  /** The board height */
+  height: number;
+
+  /** The board width */
+  width: number;
+
+  /** Reference to the goal board */
   goal: BoardTiles;
 
+  /** The current position of zero */
   zeroPosition: TileCoord;
 
-  constructor(tiles: BoardTiles) {
+  constructor(tiles: BoardTiles, position: ?TileCoord = null) {
     this.board = tiles;
-    this.zeroPosition = getZeroPosition(this.board);
+    this.height = tiles.length;
+    this.width = tiles[0].length;
+    this.zeroPosition = position || getZeroPosition(this.board);
     this.goal = getGoalBoard(this.board);
   }
 
@@ -115,7 +142,7 @@ export default class Board {
    * @returns {number} The Manhattan priority value.
    */
   manhattan(moves: number = 0): number {
-    const numTiles: number = this.board.length * this.board.length;
+    const numTiles: number = this.height * this.width;
     let priority: number = moves;
 
     for (var i = 0; i < numTiles; i++) {
@@ -151,102 +178,29 @@ export default class Board {
     const manhattan = this.manhattan(moves);
     return hamming > manhattan ? manhattan : hamming;
   }
+
+  getNeighbors(): Board[] {
+    const result = [];
+
+    // Work from right to left since most puzzles favour that direction
+    for (let i = 1; i > -2; i -= 2) {
+      // Check horizontally first...
+      if (this.zeroPosition.x + i >= 0 && this.zeroPosition.x + i < this.width) {
+        result.push(newBoardFromPosition(this.board, {
+          x: this.zeroPosition.x + i,
+          y: this.zeroPosition.y,
+        }, this.zeroPosition));
+      }
+
+      // Now vertically...
+      if (this.zeroPosition.y + i >= 0 && this.zeroPosition.y + i < this.height) {
+        result.push(newBoardFromPosition(this.board, {
+          x: this.zeroPosition.x,
+          y: this.zeroPosition.y + i,
+        }, this.zeroPosition));
+      }
+    }
+
+    return result;
+  }
 }
-
-// const Board = function (tiles) {
-//   return {
-//     getPriority: function(moves) {
-//       var hamming = this.hamming(moves),
-//           manhattan = this.manhattan(moves);
-//       return hamming > manhattan ? manhattan : hamming;
-//     },
-
-//     equals: function(boardY) {
-//       var boardX = this.board;
-
-//       if (boardX.length !== boardY.length) {
-//         return false;
-//       }
-
-// //        console.log('--------------------------------------');
-// //        console.log('boardX');
-// //        console.log(boardX);
-// //        console.log('boardY');
-// //        console.log(boardY);
-
-//       var result = boardY.every(function(row, rowIndex) {
-//         return row.every(function(col, colIndex) {
-//           return col === boardX[rowIndex][colIndex];
-//         });
-//       });
-
-//       return result;
-//     },
-
-//     getPossibleMoves: function(emptyCoords) {
-//       var possibleNeighbors = [];
-
-//       for (var i = -1; i < 2; i++) {
-//         if (i != 0) {
-//           if (emptyCoords.row + i >= 0 &&
-//               emptyCoords.row + i < this.board[0].length) {
-//             possibleNeighbors.push({
-//               val: this.board[emptyCoords.row + i][emptyCoords.col],
-//               row: emptyCoords.row + i,
-//               col: emptyCoords.col
-//             });
-//           }
-
-//           if (emptyCoords.col + i >= 0 &&
-//               emptyCoords.col + i < this.board.length) {
-//             possibleNeighbors.push({
-//               val: this.board[emptyCoords.row][emptyCoords.col + i],
-//               row: emptyCoords.row,
-//               col: emptyCoords.col + i
-//             });
-//           }
-//         }
-//       }
-
-//       return possibleNeighbors;
-//     },
-
-//     neighbors: function() {
-//       var initBoard = this.board,
-//           emptyCoords = {},
-//           neighbors = [],
-//           neighborCoords;
-
-//       // Get coords of zero
-//       for (var r = 0; r < this.board.length; r++) {
-//         if (this.board[r].indexOf(0) !== -1) {
-//           emptyCoords.row = r;
-//           emptyCoords.col = this.board[r].indexOf(0);
-//         }
-//       }
-
-//       // Get all possible moves
-//       neighborCoords = this.getPossibleMoves(emptyCoords);
-
-//       var newBoard;
-//       // Iterate through all possible moves,
-//       for (var i = 0; i < neighborCoords.length; i++) {
-//         newBoard = [];
-//         for (var r = 0; r < initBoard.length; r++) {
-//           newBoard[r] = [];
-//           for (var c = 0; c < initBoard[0].length; c++) {
-//             if (r == emptyCoords.row && c == emptyCoords.col) {
-//               newBoard[r].push(neighborCoords[i].val);
-//             } else if (r == neighborCoords[i].row && c == neighborCoords[i].col) {
-//               newBoard[r].push(0);
-//             } else {
-//               newBoard[r].push(initBoard[r][c]);
-//             }
-//           }
-//         }
-//         neighbors.push(new Board(newBoard));
-//       }
-//       return neighbors;
-//     },
-//   };
-// };

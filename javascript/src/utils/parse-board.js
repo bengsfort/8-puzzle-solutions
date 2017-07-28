@@ -1,4 +1,7 @@
-// @flow
+/**
+ * @providesModule ParseBoard
+ * @flow
+ */
 
 'use strict';
 
