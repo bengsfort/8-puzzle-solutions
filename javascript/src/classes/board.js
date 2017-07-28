@@ -32,9 +32,9 @@ export const getGoalBoard = (board: BoardTiles): BoardTiles => {
 /**
  * Flattens a board into a one-dimensional array for easier parsing.
  * @param {BoardTiles} board The board to flatten.
- * @returns {number[]} A one-dimensional array.
+ * @returns {Array<number>} A one-dimensional array.
  */
-export const flattenBoard = (board: BoardTiles): number[] => {
+export const flattenBoard = (board: BoardTiles): Array<number> => {
   return board.reduce((prev, cur) => prev.concat(cur));
 };
 
@@ -179,7 +179,7 @@ export default class Board {
     return hamming > manhattan ? manhattan : hamming;
   }
 
-  getNeighbors(): Board[] {
+  getNeighbors(): Array<Board> {
     const result = [];
 
     // Work from right to left since most puzzles favour that direction

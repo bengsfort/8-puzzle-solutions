@@ -12,6 +12,14 @@ type SolverState = {
   previous: ?SolverState;
 };
 
+type SolverSolution = {
+  solution: Array<SolverState>;
+  moves: number;
+  context: Solver;
+};
+
+type SolutionCallback = (SolverSolution) => void;
+
 export default class Solver {
 
   /** The current state of the Solver */
@@ -24,9 +32,17 @@ export default class Solver {
   goal: Board;
 
   /** The Solvers moves queue */
-  queue: SolverState[];
+  queue: Array<SolverState>;
+
+  /** List of finished solutions for slow callbacks */
+  solutions: Array<SolverSolution>;
+
+  /** List of onSolutionReady callbacks */
+  doneCallbacks: Array<SolutionCallback>;
 
   constructor(initial: Board) {
+    this.solutions = [];
+    this.doneCallbacks = [];
     this.start = initial;
     this.goal = new Board(initial.goal);
     this.state = {
