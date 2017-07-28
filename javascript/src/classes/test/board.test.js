@@ -81,12 +81,14 @@ describe('board.js tests', function() {
   describe('#equals', function() {
     it('should return true when given an identical board', function() {
       const board = new Board(board1);
-      expect(board.equals(board1)).to.be.true;
+      const other = new Board(board1);
+      expect(board.equals(other)).to.be.true;
     });
 
     it('should return false when given a different board', function() {
       const board = new Board(board1);
-      expect(board.equals(board2)).to.be.false;
+      const other = new Board(board2);
+      expect(board.equals(other)).to.be.false;
     });
   });
 

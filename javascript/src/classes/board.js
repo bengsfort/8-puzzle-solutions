@@ -112,8 +112,8 @@ export default class Board {
    * @param {BoardTiles} other The other board.
    * @returns {boolean} If the boards are equal.
    */
-  equals(other: BoardTiles): boolean {
-    const otherBoard = flattenBoard(other);
+  equals(other: Board): boolean {
+    const otherBoard = flattenBoard(other.board);
     return flattenBoard(this.board).every((val, i) => val === otherBoard[i]);
   }
 

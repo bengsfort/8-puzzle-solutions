@@ -1,51 +1,61 @@
 /**
  * @flow
- * 8puzzle Solver
- * Solver class
  * @TODO: Add check to determine if a puzzle is possible or not
  * @TODO: Clean up code for more readability
  * @TODO: Add detailed documentation for all methods
  */
-import Board from "./board";
+import Board from './board';
 
-export class Solver {
-    /**
-     * function constructor (initial)
-     */
-    constructor (initial: Board) {
-        let state = {}, queue = [],
-            goal = initial.getGoalBoard();
+type SolverState = {
+  board: Board;
+  moves: number;
+  previous: ?SolverState;
+};
 
-        this.initial = initial;
-        this.goal = goal;
+export default class Solver {
 
-        // Set initial state
-        state = {
-            board: initial,
-            moves: 0,
-            previous: null
-        };
+  /** The current state of the Solver */
+  state: SolverState;
 
-        // Push current state into the queue
-        queue.push(state);
+  /** The starting board we are solving for */
+  start: Board;
 
-        this.state = state;
-        this.queue = queue;
-//        this.priority = []; Implement after fixing final board erroring out
+  /** The goal board we are trying to get to */
+  goal: Board;
 
-        while ( ! this.state.board.equals(this.goal) ) {
-            this.getNextMove();
-        }
+  /** The Solvers moves queue */
+  queue: SolverState[];
 
-        this.solutionReady();
+  constructor(initial: Board) {
+    this.start = initial;
+    this.goal = new Board(initial.goal);
+    this.state = {
+      board: initial,
+      moves: 0,
+      previous: null,
+    };
+    this.queue = [ this.state ];
+    this.solve();
+  }
+
+  /**
+   * Main solver function. Continues searching for moves until the state board equals the goal board.
+   */
+  solve(): void {
+    while (!this.state.board.equals(this.goal)) {
+      this.getNextMove();
     }
+    this.solutionReady();
+  }
+
+    
 
     /**
      * function getNextMove ()
      */
     getNextMove () {
         let priority = [], bestOption,
-            neighbors = this.state.board.neighbors();
+            neighbors = this.state.board.getNeighbors();
 
         // Create a new priority queue with all neighbors that haven't already been used
         priority = this.createPriorityQueue( neighbors );
@@ -198,5 +208,3 @@ export class Solver {
         return this.queue;
     }
 }
-
-module.exports = Solver;
