@@ -6,19 +6,26 @@
  */
 import Board from './board';
 
-type SolverState = {
+export type SolverState = {
   board: Board;
   moves: number;
   previous: ?SolverState;
 };
 
-type SolverSolution = {
-  solution: Array<SolverState>;
+export type SolverSolution = {
+  states: Array<SolverState>;
   moves: number;
   context: Solver;
 };
 
-type SolutionCallback = (SolverSolution) => void;
+export class NotSolvableError {
+  name: string;
+  message: string;
+  constructor() {
+    this.message = 'Board not solvable!';
+    this.name = 'NotSolvableError';
+  }
+}
 
 export default class Solver {
 
@@ -34,12 +41,6 @@ export default class Solver {
   /** The Solvers moves queue */
   queue: Array<SolverState>;
 
-  /** List of finished solutions for slow callbacks */
-  solutions: Array<SolverSolution>;
-
-  /** List of onSolutionReady callbacks */
-  doneCallbacks: Array<SolutionCallback>;
-
   constructor(initial: Board) {
     this.solutions = [];
     this.doneCallbacks = [];
@@ -51,17 +52,26 @@ export default class Solver {
       previous: null,
     };
     this.queue = [ this.state ];
-    this.solve();
   }
 
   /**
    * Main solver function. Continues searching for moves until the state board equals the goal board.
    */
-  solve(): void {
-    while (!this.state.board.equals(this.goal)) {
-      this.getNextMove();
-    }
-    this.solutionReady();
+  solve(): Promise<?SolverSolution> {
+    return new Promise((resolve, reject) => {
+      try {
+        while (!this.state.board.equals(this.goal)) {
+          this.getNextMove();
+        }
+        resolve({
+          states: this.queue,
+          moves: this.state.moves,
+          context: this,
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
     
