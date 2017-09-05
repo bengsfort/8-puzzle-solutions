@@ -16,13 +16,13 @@ import type {
  * @param {BoardTiles} board The board to determine a goal for.
  * @returns {BoardTiles} the goal board.
  */
-export const getGoalBoard = (board: BoardTiles): BoardTiles => {
-  const range: number = board.length * board.length;
+export const getGoalBoard = (width: number, height: number): BoardTiles => {
+  const range: number = width * height;
   const goal: BoardTiles = [];
 
-  for (let y = 0, n = 1; y < board.length; y++) {
+  for (let y = 0, n = 1; y < height; y++) {
     goal[y] = [];
-    for (let x = 0; x < board.length; x++, n++) {
+    for (let x = 0; x < width; x++, n++) {
       goal[y][x] = (n < range ? n : 0);
     }
   }
@@ -95,7 +95,7 @@ export default class Board {
     this.height = tiles.length;
     this.width = tiles[0].length;
     this.zeroPosition = position || getZeroPosition(this.board);
-    this.goal = getGoalBoard(this.board);
+    this.goal = getGoalBoard(this.width, this.height);
   }
 
   /**

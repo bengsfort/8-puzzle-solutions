@@ -131,16 +131,13 @@ export default class Solver {
   createPriorityQueue(boards: Array<Board>): Array<PriorityQueueItem> {
     const priority: Array<PriorityQueueItem> = [];
     boards.map(board => {
-      console.log('checking board', board.board);
       if (!hasBoardBeenUsed(board, this.history)) {
-        console.log('board has not been used...');
         priority.push({
           priority: board.getPriority(this.state.moves),
           board: board,
         });
       }
     });
-    console.log('sorting result array');
     return priority.sort((a, b) => a.priority - b.priority);
   }
 }

@@ -7,7 +7,9 @@ import Solver, {
 
 function MockBoard(testValue, testPriority) {
   return {
-    // default to 10 if not provided
+    value: testValue,
+    board: [[1, 2, 3], [4, 5, 6], [7, 8, 0]],
+    goal: [[1, 2, 3], [4, 5, 6], [7, 8, 0]],
     getPriority: (moves) => testPriority || 10,
     equals: (val) => val === testValue,
   };
@@ -46,12 +48,23 @@ describe('solver.js tests', function() {
       const firstBoard = new MockBoard('a', 1);
       const secondBoard = new MockBoard('b', 2);
       const thirdBoard = new MockBoard('c', 3);
-      console.log('testing....');
-      const priority = solver.createPriorityQueue([ firstBoard, secondBoard, thirdBoard ]);
+      const priority = solver.createPriorityQueue([ thirdBoard, firstBoard, secondBoard ]);
+
       expect(priority).to.be.an('array').that.has.lengthOf(3);
-      expect(priority[0].equals(firstBoard)).to.be.true;
-      expect(priority[1].equals(secondBoard)).to.be.true;
-      expect(priority[2].equals(thirdBoard)).to.be.true;
+      expect(priority[0].board.equals('a')).to.be.true;
+      expect(priority[1].board.equals('b')).to.be.true;
+      expect(priority[2].board.equals('c')).to.be.true;
+    });
+
+    it('should ignore boards that have already been used', function() {
+      const solver = new Solver(testStartBoard);
+      const firstBoard = new MockBoard('a', 1);
+      const secondBoard = new MockBoard('b', 2);
+      const priority = solver.createPriorityQueue([ testStartBoard, firstBoard, secondBoard ]);
+
+      expect(priority).to.be.an('array').that.has.lengthOf(2);
+      expect(priority[0].board.equals('a')).to.be.true;
+      expect(priority[0].board.equals('b')).to.be.true;
     });
   });
 });

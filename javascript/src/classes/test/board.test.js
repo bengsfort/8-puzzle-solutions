@@ -21,7 +21,7 @@ const formattedBoard1 = `
 describe('board.js tests', function() {
   describe('helpers', function() {
     it('#getGoalBoard should return a valid goal', function() {
-      const result = getGoalBoard(board2);
+      const result = getGoalBoard(3, 3);
       expect(result).to.not.be.null;
       expect(result).to.deep.equal(board1);
     });
