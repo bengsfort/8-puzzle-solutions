@@ -12,6 +12,7 @@ import type {
 
 /**
  * Gets the goal board based on a provided board.
+ * @todo: this should be done via passing a length not a board.
  * @param {BoardTiles} board The board to determine a goal for.
  * @returns {BoardTiles} the goal board.
  */

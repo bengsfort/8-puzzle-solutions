@@ -1,9 +1,9 @@
 /**
  * @flow
- * @TODO: Add check to determine if a puzzle is possible or not
- * @TODO: Clean up code for more readability
- * @TODO: Add detailed documentation for all methods
+ * @todo: Add check to determine if a puzzle is possible or not
  */
+'use strict';
+
 import Board from './board';
 
 export type SolverState = {
@@ -15,17 +15,38 @@ export type SolverState = {
 export type SolverSolution = {
   states: Array<SolverState>;
   moves: number;
+  solvable: boolean;
   context: Solver;
 };
 
+export type PriorityQueueItem = {
+  priority: number;
+  board: Board;
+};
+
+/**
+ * Error for when a board is not solvable.
+ */
 export class NotSolvableError {
   name: string;
   message: string;
-  constructor() {
+  solver: SolverSolution;
+  constructor(solver: SolverSolution) {
     this.message = 'Board not solvable!';
     this.name = 'NotSolvableError';
+    this.solver = solver;
   }
 }
+
+/**
+ * Checks to see whether a provided board has been used within a queue.
+ * @param {Board} board - The board to check against the queue.
+ * @param {Array<SolverState>} queue - The queue to check in.
+ * @returns boolean - true if the board has been used previously.
+ */
+export const hasBoardBeenUsed = (board: Board, queue: Array<SolverState>): boolean => {
+  return !queue.every(state => !board.equals(state.board));
+};
 
 export default class Solver {
 
@@ -39,11 +60,9 @@ export default class Solver {
   goal: Board;
 
   /** The Solvers moves queue */
-  queue: Array<SolverState>;
+  history: Array<SolverState>;
 
   constructor(initial: Board) {
-    this.solutions = [];
-    this.doneCallbacks = [];
     this.start = initial;
     this.goal = new Board(initial.goal);
     this.state = {
@@ -51,11 +70,12 @@ export default class Solver {
       moves: 0,
       previous: null,
     };
-    this.queue = [ this.state ];
+    this.history = [ this.state ];
   }
 
   /**
    * Main solver function. Continues searching for moves until the state board equals the goal board.
+   * @todo: This should probably have less dependencies so that multiple solves can be happening at once.
    */
   solve(): Promise<?SolverSolution> {
     return new Promise((resolve, reject) => {
@@ -64,9 +84,10 @@ export default class Solver {
           this.getNextMove();
         }
         resolve({
-          states: this.queue,
+          states: this.history,
           moves: this.state.moves,
           context: this,
+          solvable: true,
         });
       } catch (error) {
         reject(error);
@@ -74,163 +95,52 @@ export default class Solver {
     });
   }
 
+  /**
+   * Checks all neighbors and determines which one is the most likely to lead to a solved puzzle,
+   * then pushes that into the state.
+   */
+  getNextMove(): void {
+    // Create a new priority queue with all neighbors that haven't already been used
+    const neighbors = this.state.board.getNeighbors();
+    const priority = this.createPriorityQueue(neighbors);
     
-
-    /**
-     * function getNextMove ()
-     */
-    getNextMove () {
-        let priority = [], bestOption,
-            neighbors = this.state.board.getNeighbors();
-
-        // Create a new priority queue with all neighbors that haven't already been used
-        priority = this.createPriorityQueue( neighbors );
-
-        // Decide which move is the best one to try next
-        bestOption = this.chooseBestMove(priority);
-
-        this.state = {
-            board: bestOption,
-            moves: this.state.moves + 1,
-            previous: this.state
-        };
-
-        this.queue.push(this.state);
+    // If the priority queue is empty that means we've tried everything already
+    if (priority.length < 1) {
+      throw new NotSolvableError({
+        states: this.history,
+        moves: this.state.moves,
+        context: this,
+        solvable: false,
+      });
     }
 
-    /**
-     * function chooseBestMove (priority)
-     */
-    chooseBestMove (priority) {
-        let curr, prev, bestOption;
+    this.state = {
+      board: priority[0].board,
+      moves: this.state.moves + 1,
+      previous: this.state,
+    };
 
-        priority.map((item, index, arr) => {
-            if (index == 0) {
-                bestOption = item;
-                return;
-            }
+    this.history.push(this.state);
+  }
 
-            if ((item.hamming === 0 && item.manhattan === 0) ||
-                (item.hamming < bestOption.hamming && item.manhattan < bestOption.manhattan)) {
-                bestOption = item;
-                return;
-            }
+  /**
+   * Creates a sorted priority queue from a group of boards.
+   * @param {Array<Board>} boards - The group of boards the queue should be created from.
+   * @returns Array<PriorityQueueItem> - A priority queue filled with the boards.
+   */
+  createPriorityQueue(boards: Array<Board>): Array<PriorityQueueItem> {
+    const priority: Array<PriorityQueueItem> = [];
+    boards.map(board => {
+      console.log('checking board', board.board);
+      if (!hasBoardBeenUsed(board, this.history)) {
+        console.log('board has not been used...');
+        priority.push({
+          priority: board.getPriority(this.state.moves),
+          board: board,
         });
-
-        return bestOption.board;
-    }
-
-    /**
-     * function createPriorityQueue (boards)
-     */
-    createPriorityQueue ( boards ) {
-        let priority = [];
-        boards.map((board, i, arr) => {
-            let test = this.checkPreviousBoards( board, this.queue, () => {
-                return {
-                    hamming   : board.hamming(this.state.moves),
-                    manhattan : board.manhattan(this.state.moves),
-                    board     : board
-                };
-            });
-            if (test !== false) priority.push(test);
-        });
-        return priority;
-    }
-
-    /**
-     * function checkPreviousBoards (board, queue, cb)
-     * Returns true if NOT found
-     */
-    checkPreviousBoards (board, queue, cb) {
-        if (queue.length === 1) return cb();
-        let results, fireCb = false;
-
-        results = queue.every((state) => {
-            let boardCheck = board.equals(state.board.board); // should be false for "no matches"
-
-            if (boardCheck === false) {
-                fireCb = true;
-                return true;
-            }
-
-            return false;
-        });
-
-        if (results === true) {
-            return cb();
-        }
-
-        return results;
-    }
-
-    /**
-     * function onSolutionReady(callback)
-     */
-    onSolutionReady (callback) {
-        this.readyCallbacks = this.readyCallbacks || [];
-        this.readyCallbacks.push(callback);
-
-        if (this.hasOwnProperty('completedSolutions')) {
-            this.completedSolutions.filter((finished) => {
-                callback(finished.solution, finished.moves, finished.context);
-            });
-        }
-    }
-
-    /**
-     * function solutionReady()
-     */
-    solutionReady () {
-        if (this.hasOwnProperty('readyCallbacks')) {
-            for (let i = 0, len = this.readyCallbacks.length; i < len; i++) {
-                this.readyCallbacks[i](this.getSolution, this.getMoves, this);
-            }
-        }
-
-        // Push completed solutions to a global array in case
-        // the solution finishes before an event handler is declared.
-        this.completedSolutions = [];
-        this.completedSolutions.push({
-            solution : this.getSolution,
-            moves    : this.getMoves,
-            context  : this
-        });
-    }
-
-    /**
-     * function isSolvable ()
-     * @TODO
-     */
-    isSolvable () {
-        return true || false;
-    }
-
-    /**
-     * function getMoves()
-     */
-    get getMoves () {
-        return this.state.moves;
-    }
-
-    /**
-     * function priorityQueue ()
-     */
-    get priorityQueue () {
-        return this.priority;
-    }
-
-    /**
-     * function getState()
-     */
-    get getState () {
-        return this.state;
-    }
-
-    /**
-     * function getSolution ()
-     */
-    get getSolution () {
-        return this.queue;
-    }
+      }
+    });
+    console.log('sorting result array');
+    return priority.sort((a, b) => a.priority - b.priority);
+  }
 }
