@@ -27,13 +27,11 @@ export type PriorityQueueItem = {
 /**
  * Error for when a board is not solvable.
  */
-export class NotSolvableError {
-  name: string;
-  message: string;
+export class NotSolvableError extends Error {
   solver: SolverSolution;
   constructor(solver: SolverSolution) {
-    this.message = 'Board not solvable!';
-    this.name = 'NotSolvableError';
+    super('Board not solvable!');
+    this.name = this.constructor.name;
     this.solver = solver;
   }
 }
@@ -51,7 +49,7 @@ export const hasBoardBeenUsed = (board: Board, queue: Array<SolverState>): boole
 export default class Solver {
 
   /** The current state of the Solver */
-  state: SolverState;
+  // state: SolverState;
 
   /** The starting board we are solving for */
   start: Board;
@@ -60,17 +58,11 @@ export default class Solver {
   goal: Board;
 
   /** The Solvers moves queue */
-  history: Array<SolverState>;
+  // history: Array<SolverState>;
 
   constructor(initial: Board) {
     this.start = initial;
     this.goal = new Board(initial.goal);
-    this.state = {
-      board: initial,
-      moves: 0,
-      previous: null,
-    };
-    this.history = [ this.state ];
   }
 
   /**
@@ -78,14 +70,22 @@ export default class Solver {
    * @todo: This should probably have less dependencies so that multiple solves can be happening at once.
    */
   solve(): Promise<?SolverSolution> {
+    let state: SolverState = {
+      board: this.start,
+      moves: 0,
+      previous: null,
+    };
+    const history: Array<SolverState> = [ state ];
+
     return new Promise((resolve, reject) => {
       try {
-        while (!this.state.board.equals(this.goal)) {
-          this.getNextMove();
+        while (!state.board.equals(this.goal)) {
+          state = this.getNextMove(state, history);
+          history.push(state);
         }
         resolve({
-          states: this.history,
-          moves: this.state.moves,
+          states: history,
+          moves: state.moves,
           context: this,
           solvable: true,
         });
@@ -99,28 +99,28 @@ export default class Solver {
    * Checks all neighbors and determines which one is the most likely to lead to a solved puzzle,
    * then pushes that into the state.
    */
-  getNextMove(): void {
+  getNextMove(state: SolverState, history: Array<SolverState>): SolverState {
     // Create a new priority queue with all neighbors that haven't already been used
-    const neighbors = this.state.board.getNeighbors();
-    const priority = this.createPriorityQueue(neighbors);
-    
+    const neighbors = state.board.getNeighbors()
+      .filter(board => !hasBoardBeenUsed(board, history));
+    const priority = this.createPriorityQueue(neighbors, state.moves);
+
     // If the priority queue is empty that means we've tried everything already
     if (priority.length < 1) {
       throw new NotSolvableError({
-        states: this.history,
-        moves: this.state.moves,
+        states: history,
+        moves: state.moves,
         context: this,
         solvable: false,
       });
     }
 
-    this.state = {
+    // Return a new state
+    return {
       board: priority[0].board,
-      moves: this.state.moves + 1,
-      previous: this.state,
+      moves: state.moves + 1,
+      previous: state,
     };
-
-    this.history.push(this.state);
   }
 
   /**
@@ -128,16 +128,10 @@ export default class Solver {
    * @param {Array<Board>} boards - The group of boards the queue should be created from.
    * @returns Array<PriorityQueueItem> - A priority queue filled with the boards.
    */
-  createPriorityQueue(boards: Array<Board>): Array<PriorityQueueItem> {
-    const priority: Array<PriorityQueueItem> = [];
-    boards.map(board => {
-      if (!hasBoardBeenUsed(board, this.history)) {
-        priority.push({
-          priority: board.getPriority(this.state.moves),
-          board: board,
-        });
-      }
-    });
-    return priority.sort((a, b) => a.priority - b.priority);
+  createPriorityQueue(boards: Array<Board>, moves: number): Array<PriorityQueueItem> {
+    return boards.map(board => ({
+      priority: board.getPriority(moves),
+      board: board,
+    })).sort((a, b) => a.priority - b.priority);
   }
 }
