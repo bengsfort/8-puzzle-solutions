@@ -3,17 +3,17 @@
 
   "env": {
     "es6": true,
-    "jasmine": true,
+    "jasmine": true
   },
 
   "plugins": [
-    "flowtype",
+    "flowtype"
   ],
 
   "settings": {
     "flowtype": {
-      "onlyFilesWithFlowAnnotation": true,
-    },
+      "onlyFilesWithFlowAnnotation": true
+    }
   },
 
   // Map from global var to bool specifying if it can be redefined

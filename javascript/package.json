@@ -4,9 +4,10 @@
   "description": "A node-based version of an 8-puzzle solver project.",
   "main": "solver.js",
   "scripts": {
-    "babel": "./node_modules/.bin/babel ./src -d ./build",
+    "babel": "./node_modules/.bin/babel ./src -d ./build --copy-files",
     "clean": "rm -rf ./build",
     "lint": "./node_modules/.bin/eslint ./src",
+    "lint:fix": "./node_modules/.bin/eslint ./src --fix",
     "prestart": "npm run babel",
     "start": "node ./build/index.js ../puzzles/testPuzzle.txt",
     "poststart": "npm run clean",
@@ -25,14 +26,18 @@
   },
   "homepage": "https://github.com/aesinv/javascript-8-puzzle#readme",
   "dependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-flow": "^6.23.0",
     "chai": "^4.0.0",
-    "eslint": "^3.19.0",
-    "eslint-plugin-flowtype": "^2.34.0",
     "flow-bin": "^0.47.0",
     "mocha": "^3.4.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.7.0",
+    "eslint-plugin-flowtype": "^3.0.0"
   }
 }
