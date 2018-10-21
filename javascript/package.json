@@ -4,27 +4,27 @@
   "description": "A node-based version of an 8-puzzle solver project.",
   "main": "solver.js",
   "scripts": {
-    "babel": "./node_modules/.bin/babel ./src -d ./build --copy-files",
+    "build": "./node_modules/.bin/babel ./src -d ./build --copy-files",
     "clean": "rm -rf ./build",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint:fix": "./node_modules/.bin/eslint ./src --fix",
-    "prestart": "npm run babel",
+    "prestart": "yarn build",
     "start": "node ./build/index.js ../puzzles/testPuzzle.txt",
-    "poststart": "npm run clean",
-    "pretest": "npm run babel",
+    "poststart": "yarn clean",
+    "pretest": "yarn build",
     "test": "./node_modules/.bin/mocha ./build/**/*.test.js -G --recursive",
-    "posttest": "npm run clean"
+    "posttest": "yarn clean"
   },
-  "author": "Matt Bengston [bengsfort.github.io] <bengston.matthew@gmail.com>",
+  "author": "Matt Bengston [https://bengsfort.github.io/portfolio-2018] <bengston.matthew@gmail.com>",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aesinv/javascript-8-puzzle.git"
+    "url": "git+https://github.com/bengsfort/javascript-8-puzzle.git"
   },
   "bugs": {
-    "url": "https://github.com/aesinv/javascript-8-puzzle/issues"
+    "url": "https://github.com/bengsfort/javascript-8-puzzle/issues"
   },
-  "homepage": "https://github.com/aesinv/javascript-8-puzzle#readme",
+  "homepage": "https://github.com/bengsfort/javascript-8-puzzle#readme",
   "dependencies": {
     "chai": "^4.0.0",
     "flow-bin": "^0.47.0",
