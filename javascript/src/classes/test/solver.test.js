@@ -5,6 +5,7 @@ import Solver, {
   hasBoardBeenUsed,
 } from '../solver';
 
+/** @todo use actual mocking lib one of these days */
 function MockBoard(testValue, testPriority) {
   const board = {
     neighbors: [],

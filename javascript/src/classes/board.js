@@ -180,25 +180,32 @@ export default class Board {
     return hamming > manhattan ? manhattan : hamming;
   }
 
+  /**
+   * Gets the neighbors of the current board.
+   * @todo This is borked my dude
+   * @returns {Array<Board>} An array of the neighboring boards.
+   */
   getNeighbors(): Array<Board> {
     const result = [];
+    const { zeroPosition, board, width, height } = this;
 
     // Work from right to left since most puzzles favour that direction
     for (let i = 1; i > -2; i -= 2) {
+      console.log(`Zero position: ${zeroPosition.x}, ${zeroPosition.y}`);
       // Check horizontally first...
-      if (this.zeroPosition.x + i >= 0 && this.zeroPosition.x + i < this.width) {
-        result.push(newBoardFromPosition(this.board, {
-          x: this.zeroPosition.x + i,
-          y: this.zeroPosition.y,
-        }, this.zeroPosition));
+      if (zeroPosition.x + i >= 0 && zeroPosition.x + i < width) {
+        result.push(newBoardFromPosition(board, {
+          x: zeroPosition.x + i,
+          y: zeroPosition.y,
+        }, zeroPosition));
       }
 
       // Now vertically...
-      if (this.zeroPosition.y + i >= 0 && this.zeroPosition.y + i < this.height) {
-        result.push(newBoardFromPosition(this.board, {
-          x: this.zeroPosition.x,
-          y: this.zeroPosition.y + i,
-        }, this.zeroPosition));
+      if (zeroPosition.y + i >= 0 && zeroPosition.y + i < height) {
+        result.push(newBoardFromPosition(board, {
+          x: zeroPosition.x,
+          y: zeroPosition.y + i,
+        }, zeroPosition));
       }
     }
 

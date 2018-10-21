@@ -2,6 +2,8 @@
 
 import { expect } from 'chai';
 
+import fs from 'fs';
+import path from 'path';
 import parseBoard from '../parse-board';
 
 const validBoard = '3\n1 2 3\n4 5 6\n7 8 0\n';
@@ -9,6 +11,14 @@ const missingSizeBoard = '3 2 1\n4 5 6\n7 8 0\n';
 const smallBoard = '1\n0';
 
 describe('parse-board.js tests', function() {
+  it('should parse a correct file', function() {
+    const file = fs.readFileSync(path.resolve(__dirname, './testBoard.txt')).toString();
+    const result = parseBoard(file);
+    console.log(`result: ${result}`);
+    expect(result).to.be.an('array');
+    expect(result[0]).to.be.an('array');
+  });
+
   it('should return a two dimensional array', function() {
     const result = parseBoard(validBoard);
     expect(result).to.be.an('array');

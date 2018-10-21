@@ -34,7 +34,7 @@ const parseBoard = (board: string): BoardTiles => {
     throw new Error('The board needs to be bigger than 1.');
   }
 
-	// Iterate through the file and create tiles
+  // Iterate through the file and create tiles
   for (var i = 0; i < numBoxes; i++) {
     tiles[i] = []; // Init empty array within current row
     for (var j = 0; j < numBoxes; j++) {

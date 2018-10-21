@@ -48,17 +48,11 @@ export const hasBoardBeenUsed = (board: Board, queue: Array<SolverState>): boole
 
 export default class Solver {
 
-  /** The current state of the Solver */
-  // state: SolverState;
-
   /** The starting board we are solving for */
   start: Board;
 
   /** The goal board we are trying to get to */
   goal: Board;
-
-  /** The Solvers moves queue */
-  // history: Array<SolverState>;
 
   constructor(initial: Board) {
     this.start = initial;
@@ -67,7 +61,6 @@ export default class Solver {
 
   /**
    * Main solver function. Continues searching for moves until the state board equals the goal board.
-   * @todo: This should probably have less dependencies so that multiple solves can be happening at once.
    */
   solve(): Promise<?SolverSolution> {
     let state: SolverState = {
@@ -80,6 +73,7 @@ export default class Solver {
     return new Promise((resolve, reject) => {
       try {
         while (!state.board.equals(this.goal)) {
+          console.log(`...Solve tick...`);
           state = this.getNextMove(state, history);
           history.push(state);
         }
@@ -102,11 +96,15 @@ export default class Solver {
   getNextMove(state: SolverState, history: Array<SolverState>): SolverState {
     // Create a new priority queue with all neighbors that haven't already been used
     const neighbors = state.board.getNeighbors()
-      .filter(board => !hasBoardBeenUsed(board, history));
+      .filter(board => {
+        console.log(`filtering board ${board}`);
+        return !hasBoardBeenUsed(board, history);
+      });
     const priority = this.createPriorityQueue(neighbors, state.moves);
-
+    console.log(`Neighbor count: ${neighbors.length}`);
     // If the priority queue is empty that means we've tried everything already
     if (priority.length < 1) {
+      console.log(`Queue length was less than 1.`);
       throw new NotSolvableError({
         states: history,
         moves: state.moves,
