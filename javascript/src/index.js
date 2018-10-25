@@ -45,11 +45,11 @@ solver.solve()
 
     // Log results to console
     console.log(`Minimum number of moves: ${solution.moves}`);
-    console.log(`Solution found in ${speed.total * 1000}ms.`);
-    console.log(`\tBoard parsing:\t\t${speed.parseBoard * 1000}ms`);
-    console.log(`\tBoard creation:\t\t${speed.createBoard * 1000}ms`);
-    console.log(`\tSolver creation:\t\t${speed.createSolver * 1000}ms`);
-    console.log(`\tSolving:\t\t\t${speed.solving * 1000}ms`);
+    console.log(`Solution found in ${speed.total}μs.`);
+    console.log(`\tBoard parsing:\t\t${speed.parseBoard}μs`);
+    console.log(`\tBoard creation:\t\t${speed.createBoard}μs`);
+    console.log(`\tSolver creation:\t${speed.createSolver}μs`);
+    console.log(`\tSolving:\t\t${speed.solving}μs`);
 
     process.exit(0);
   })
@@ -60,11 +60,11 @@ solver.solve()
 
     console.error(`[${error.name}]:`, error.message);
 
-    console.log(`Errored after ${speed.total * 1000}ms.`);
-    console.log(`\tBoard parsing:\t\t${(speed.parseBoard || 0) * 1000}ms`);
-    console.log(`\tBoard creation:\t\t${(speed.createBoard || 0) * 1000}ms`);
-    console.log(`\tSolver creation:\t${(speed.createSolver || 0) * 1000}ms`);
-    console.log(`\tSolving:\t\t${(speed.solving || 0) * 1000}ms`);
+    console.log(`Errored after ${speed.total}μs.`);
+    console.log(`\tBoard parsing:\t\t${(speed.parseBoard || 0)}μs`);
+    console.log(`\tBoard creation:\t\t${(speed.createBoard || 0)}μs`);
+    console.log(`\tSolver creation:\t${(speed.createSolver || 0)}μs`);
+    console.log(`\tSolving:\t\t${(speed.solving || 0)}μs`);
 
     process.exit(1);
   });

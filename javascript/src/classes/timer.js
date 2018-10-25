@@ -3,6 +3,8 @@
  * @flow
  */
 
+import microtime from 'microtime';
+
 'use strict';
 
 type TimerTick = {
@@ -28,7 +30,7 @@ export default class Timer {
    * Initializes the timer.
    */
   start(): void {
-    this._startTime = Date.now();
+    this._startTime = microtime.now();
     this._lastTick = this._startTime;
   }
 
@@ -38,7 +40,7 @@ export default class Timer {
    * @param string id: The ID for this time segment.
    */
   save(id: string): void {
-    const now: number = Date.now();
+    const now: number = microtime.now();
     this._results.push({
       id: id,
       time: now - this._lastTick,
@@ -52,7 +54,7 @@ export default class Timer {
    * @returns TimerResults: An array of all times + total time.
    */
   end(): TimerResults {
-    const now: number = Date.now();
+    const now: number = microtime.now();
     const results: TimerResults = {
       total: now - this._startTime,
     };
