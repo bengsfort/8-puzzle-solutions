@@ -73,7 +73,6 @@ export default class Solver {
     return new Promise((resolve, reject) => {
       try {
         while (!state.board.equals(this.goal)) {
-          console.log(`...Solve tick...`);
           state = this.getNextMove(state, history);
           history.push(state);
         }
@@ -96,12 +95,8 @@ export default class Solver {
   getNextMove(state: SolverState, history: Array<SolverState>): SolverState {
     // Create a new priority queue with all neighbors that haven't already been used
     const neighbors = state.board.getNeighbors()
-      .filter(board => {
-        console.log(`filtering board ${board}`);
-        return !hasBoardBeenUsed(board, history);
-      });
+      .filter(board => !hasBoardBeenUsed(board, history));
     const priority = this.createPriorityQueue(neighbors, state.moves);
-    console.log(`Neighbor count: ${neighbors.length}`);
     // If the priority queue is empty that means we've tried everything already
     if (priority.length < 1) {
       console.log(`Queue length was less than 1.`);

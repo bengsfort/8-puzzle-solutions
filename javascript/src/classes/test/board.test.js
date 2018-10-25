@@ -173,14 +173,27 @@ describe('board.js tests', function() {
         [6, 7, 0],
       ]);
       const neighbors = instance.getNeighbors();
+      console.log('Neigbors: (0, 1)');
+      console.log(neighbors[0].toString());
+      console.log(neighbors[1].toString());
       expect(neighbors[1].zeroPosition).to.deep.equal({
         x: 2,
         y: 1,
       });
+      expect(neighbors[1].board).to.deep.equal([
+        [1, 2, 3],
+        [4, 8, 0],
+        [6, 7, 5],
+      ]);
       expect(neighbors[0].zeroPosition).to.deep.equal({
         x: 1,
         y: 2,
       });
+      expect(neighbors[0].board).to.deep.equal([
+        [1, 2, 3],
+        [4, 8, 5],
+        [6, 0, 7],
+      ]);
     });
   });
 });

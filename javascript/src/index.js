@@ -25,10 +25,10 @@ console.log('Read file. Solving...');
 
 timer.start();
 const tiles: number[][] = ParseBoard(file);
-console.log(`Tiles: ${tiles}`);
+console.log(`Tiles: ${tiles.toString()}`);
 timer.save('parseBoard');
 const initial = new Board(tiles);
-console.log(`Board: ${initial}`);
+console.log(`Board: ${initial.toString()}`);
 timer.save('createBoard');
 const solver = new Solver(initial);
 timer.save('createSolver');
@@ -38,13 +38,11 @@ solver.solve()
   .then((solution: SolverSolution) => {
     timer.save('solving');
     const speed = timer.end();
-
-    solution.states.filter((state: SolverState) => {
-      console.log(state.board.toString());
-    });
+    console.log('\nSolution found with the following moves:');
+    solution.states.filter((state: SolverState) => console.log(state.board.toString()));
 
     // Log results to console
-    console.log(`Minimum number of moves: ${solution.moves}`);
+    console.log(`\nMinimum number of moves: ${solution.moves}`);
     console.log(`Solution found in ${speed.total}μs.`);
     console.log(`\tBoard parsing:\t\t${speed.parseBoard}μs`);
     console.log(`\tBoard creation:\t\t${speed.createBoard}μs`);
@@ -60,7 +58,7 @@ solver.solve()
 
     console.error(`[${error.name}]:`, error.message);
 
-    console.log(`Errored after ${speed.total}μs.`);
+    console.log(`\nErrored after ${speed.total}μs.`);
     console.log(`\tBoard parsing:\t\t${(speed.parseBoard || 0)}μs`);
     console.log(`\tBoard creation:\t\t${(speed.createBoard || 0)}μs`);
     console.log(`\tSolver creation:\t${(speed.createSolver || 0)}μs`);

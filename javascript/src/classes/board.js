@@ -63,9 +63,10 @@ export const getZeroPosition = (board: BoardTiles): TileCoord => {
  * @returns a new board with zero at the provided position
  */
 export const newBoardFromPosition = (reference: BoardTiles, position: TileCoord, oldPosition: TileCoord): Board => {
-  const tiles = reference;
+  const tiles = reference.map(row => row.slice());
+  const movedVal = tiles[position.y][position.x]; // Value copy, don't reference copy
   // Replace the old 0 with the number being moved before assigning 0 to its new position
-  tiles[oldPosition.y][oldPosition.x] = tiles[position.y][position.x];
+  tiles[oldPosition.y][oldPosition.x] = movedVal;
   tiles[position.y][position.x] = 0;
   return new Board(tiles, position);
 };
@@ -191,7 +192,6 @@ export default class Board {
 
     // Work from right to left since most puzzles favour that direction
     for (let i = 1; i > -2; i -= 2) {
-      console.log(`Zero position: ${zeroPosition.x}, ${zeroPosition.y}`);
       // Check horizontally first...
       if (zeroPosition.x + i >= 0 && zeroPosition.x + i < width) {
         result.push(newBoardFromPosition(board, {
