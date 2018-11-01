@@ -64,9 +64,9 @@ export const getZeroPosition = (board: BoardTiles): TileCoord => {
  */
 export const newBoardFromPosition = (reference: BoardTiles, position: TileCoord, oldPosition: TileCoord): Board => {
   const tiles = reference.map(row => row.slice());
-  const movedVal = tiles[position.y][position.x]; // Value copy, don't reference copy
+  // const movedVal = tiles[position.y][position.x]; // Value copy, don't reference copy
   // Replace the old 0 with the number being moved before assigning 0 to its new position
-  tiles[oldPosition.y][oldPosition.x] = movedVal;
+  tiles[oldPosition.y][oldPosition.x] = tiles[position.y][position.x];
   tiles[position.y][position.x] = 0;
   return new Board(tiles, position);
 };
@@ -183,7 +183,6 @@ export default class Board {
 
   /**
    * Gets the neighbors of the current board.
-   * @todo This is borked my dude
    * @returns {Array<Board>} An array of the neighboring boards.
    */
   getNeighbors(): Array<Board> {
