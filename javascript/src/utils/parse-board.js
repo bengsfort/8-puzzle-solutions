@@ -1,11 +1,8 @@
-/**
- * @providesModule ParseBoard
- * @flow
- */
+// @flow
 
 'use strict';
 
-import type { BoardTiles } from '../types';
+import type { BoardTiles } from '../classes/board';
 
 /**
  * Parses a stringified board representation and returns a tile set. Expected format:

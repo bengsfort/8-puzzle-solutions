@@ -1,7 +1,4 @@
-/**
- * @providesModule Timer
- * @flow
- */
+// @flow
 
 import microtime from 'microtime';
 

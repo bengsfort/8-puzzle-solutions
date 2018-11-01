@@ -1,14 +1,20 @@
-/**
- * @flow
- */
+// @flow
 
 'use strict';
 
-import type {
-  BoardTiles,
-  TileCoord,
-  CoordComparator,
-} from '../types';
+/** A two-dimensional array of board tiles. */
+export type BoardTiles = number[][];
+/** Coordinate reference for the empty tile in a board. */
+export type TileCoord = {
+  x: number;
+  y: number;
+};
+/** Coordinate comparator object. */
+export type CoordComparator = {
+  board: TileCoord;
+  goal: TileCoord;
+};
+
 
 /**
  * Gets the goal board based on a provided board.

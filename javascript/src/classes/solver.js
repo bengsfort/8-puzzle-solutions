@@ -1,7 +1,6 @@
-/**
- * @flow
- * @todo: Add check to determine if a puzzle is possible or not
- */
+// @flow
+// @todo: Add check to determine if a puzzle is possible or not
+
 'use strict';
 
 import Board from './board';
