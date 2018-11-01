@@ -25,7 +25,6 @@ describe('timer.js tests', function() {
     time.start();
     setTimeout(() => {
       const results = time.end();
-      console.log('results: ', results.total * 0.001);
       expect(results).to.have.key('total');
       // Timer uses microseconds, so multiply by 1000
       expect(results.total).to.be.greaterThan(TIMER_TEST_DURATION * 1000);
