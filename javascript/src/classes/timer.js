@@ -22,6 +22,10 @@ export default class Timer {
     this._results = [];
   }
 
+  getLength(): number {
+    return this._results.length;
+  }
+
   /**
    * Start Timer
    * Initializes the timer.
